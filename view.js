@@ -13,6 +13,9 @@ module.exports = function start(filename, json) {
   const source = json // Full, original input JSON object.
   let current = json // Current rendered object on a screen.
 
+  let lines = []
+  let scrollTop = 0
+
   // Contains map from row number to expand path.
   // Example: {0: '', 1: '.foo', 2: '.foo[0]'}
   let index = new Map()
@@ -45,6 +48,7 @@ module.exports = function start(filename, json) {
   // Init screen.
   program.alternateBuffer()
   program.put.keypad_xmit()
+  //program.setScrollRegion(0, program.rows)
   program.hideCursor()
   program.enableMouse()
   program.cursorPos(0, 0)
@@ -60,17 +64,53 @@ module.exports = function start(filename, json) {
     }
   })
 
-  // program.on('mouse', (e) => {
-  //   console.error('mouse', e)
-  // })
+  program.on('mouse', (e) => {
+    if (e.action === 'mousemove') {
+      return
+    }
 
-  program.on('resize', () => {
-    console.error('resize', program.cols, program.rows)
-    render()
+    if (e.action === 'wheeldown') {
+      scrollTop++
+      if (scrollTop + program.rows < lines.length) {
+        program.scrollUp()
+        program.saveCursor()
+        program.cursorPos(program.rows - 1, 0)
+        console.error(scrollTop, lines[scrollTop + program.rows])
+        program._write(lines[scrollTop + program.rows])
+        program.restoreCursor()
+      } else {
+        scrollTop = lines.length - program.rows - 1
+      }
+      return
+    }
+    if (e.action === 'wheelup') {
+      scrollTop--
+      if (scrollTop > 0) {
+        program.scrollDown()
+        program.saveCursor()
+        program.cursorPos(0, 0)
+        console.error(scrollTop, lines[scrollTop - 1])
+        program._write(lines[scrollTop - 1])
+        program.restoreCursor()
+      } else {
+        scrollTop = 0
+      }
+      return
+    }
   })
-  console.error(program.output.isTTY)
 
-    function expandAll() {
+  // setInterval(function () {
+  //   program.getWindowSize((_, {width, height}) => {
+  //     if (program.cols !== width || program.rows !== height) {
+  //       console.error('resize')
+  //       program.cols = width
+  //       program.rows = height
+  //       render()
+  //     }
+  //   })
+  // }, 300)
+
+  function expandAll() {
     expanded.clear()
     for (let path of dfs(json)) {
       if (expanded.size < 1000) {
@@ -79,20 +119,20 @@ module.exports = function start(filename, json) {
         break
       }
     }
-
   }
 
   function render() {
     let content
-    [content, index] = wrap(print(current), program.cols / 2)
-
-    console.error(index)
+    [content, index] = wrap(print(current), program.cols)
 
     if (typeof content === 'undefined') {
       content = 'undefined'
     }
 
-    program._write(content)
+    lines = content.split('\n')
+
+    program.clear()
+    program._write(lines.slice(scrollTop, scrollTop + program.rows).join('\n'))
   }
 
   render()
