@@ -6,7 +6,7 @@ const stringWidth = require('string-width')
 const reduce = require('./reduce')
 const print = require('./print')
 const find = require('./find')
-const config = require('./config')
+const config = require('./style')
 
 module.exports = function start(filename, source) {
   // Current rendered object on a screen.

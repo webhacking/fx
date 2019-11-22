@@ -10,7 +10,7 @@
   },
   "files": [
     "bang.js",
-    "config.js",
+    "style.js",
     "find.js",
     "fx.js",
     "index.js",
@@ -48,7 +48,8 @@
     "@medv/blessed": "^2.0.0",
     "chalk": "^2.4.2",
     "indent-string": "^4.0.0",
-    "string-width": "^4.1.0"
+    "string-width": "^4.1.0",
+    "wrap-ansi": "^6.2.0"
   },
   "devDependencies": {
     "ava": "^2.4.0",

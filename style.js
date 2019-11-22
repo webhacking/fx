@@ -10,7 +10,7 @@ const list = {
 }
 
 module.exports = {
-  space:            global.FX_STYLE_SPACE             || 2,
+  indent:           global.FX_STYLE_INDENT            || 2,
   null:             global.FX_STYLE_NULL              || chalk.grey.bold,
   number:           global.FX_STYLE_NUMBER            || chalk.cyan.bold,
   boolean:          global.FX_STYLE_BOOLEAN           || chalk.yellow.bold,

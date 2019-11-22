@@ -99,7 +99,7 @@ function handle(input) {
   const json = JSON.parse(input)
 
   if (args.length === 0 && stdout.isTTY) {
-    require('./fx')(filename, json)
+    require('./view')(filename, json)
     return
   }
 
